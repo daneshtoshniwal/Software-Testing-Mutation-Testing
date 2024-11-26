@@ -52,7 +52,6 @@ class HelperTest {
         assertEquals("John", customers.get("C001").getName());
         assertEquals("Alice", customers.get("C002").getName());
     }
-
     @Test
     void readProducts() {
         String input = "2\n" +
