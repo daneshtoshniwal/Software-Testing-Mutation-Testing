@@ -68,6 +68,19 @@ class HelperTest {
     }
 
     @Test
+    void readCustomers_invalidCustomerID() {
+        String input = "2\n" +
+                "C001 John john@example.com \"123 Street\" Regular\n" +
+                "C001 Priya priya@example.com \"456 Street\" Regular";
+
+        Scanner scanner = new Scanner(input);
+        helper.readCustomers(scanner, customers);
+
+        assertEquals(1, customers.size());
+        assertTrue(outputStream.toString().contains("INVALID_CUSTOMER_ID"));
+    }
+
+    @Test
     void readProducts_validData() {
         String input = "2\n" +
                 "P001 Electronics Phone 500.00 10 12\n" +
@@ -138,8 +151,9 @@ class HelperTest {
 
     @Test
     void readProducts_invalidWarrantyPeriodMin() {
-        String input = "1\n" +
-                "P001 Electronics Phone 500.00 10 -1";
+        String input = "2\n" +
+                "P001 Electronics Phone 500.00 10 -1\n" +
+                "P001 Electronics Phone 500.00 10 0";
 
         Scanner scanner = new Scanner(input);
         helper.readProducts(scanner, inventory);
@@ -197,6 +211,29 @@ class HelperTest {
     }
 
     @Test
+    void readCartAdditions_invalidCustomerID() {
+        String customerInput = "1\n" +
+                "C001 John john@example.com \"123 Street\" Regular";
+
+        String productInput = "1\n" +
+                "P001 Electronics Phone 500.00 10 12";
+
+        String cartInput = "1\n" +
+                "C002 P001 10";
+
+        Scanner scanner = new Scanner(customerInput);
+        helper.readCustomers(scanner, customers);
+
+        scanner = new Scanner(productInput);
+        helper.readProducts(scanner, inventory);
+
+        scanner = new Scanner(cartInput);
+        helper.readCartAdditions(scanner, customers, inventory);
+
+        assertTrue(outputStream.toString().contains("INVALID_CUSTOMER_ID"));
+    }
+
+    @Test
     void readCartAdditions_cartLimitExceeded() {
         String customerInput = "1\n" +
                 "C001 John john@example.com \"123 Street\" Regular";
@@ -217,6 +254,52 @@ class HelperTest {
         helper.readCartAdditions(scanner, customers, inventory);
 
         assertTrue(outputStream.toString().contains("OUT_OF_STOCK"));
+    }
+
+    @Test
+    void readCartAdditions_invalidQuantity() {
+        String customerInput = "1\n" +
+                "C001 John john@example.com \"123 Street\" Regular";
+
+        String productInput = "1\n" +
+                "P001 Electronics Phone 500.00 10 12";
+
+        String cartInput = "1\n" +
+                "C001 P001 -1";
+
+        Scanner scanner = new Scanner(customerInput);
+        helper.readCustomers(scanner, customers);
+
+        scanner = new Scanner(productInput);
+        helper.readProducts(scanner, inventory);
+
+        scanner = new Scanner(cartInput);
+        helper.readCartAdditions(scanner, customers, inventory);
+
+        assertTrue(outputStream.toString().contains("INVALID_QUANTITY"));
+    }
+
+    @Test
+    void readCartAdditions_invalidProductID() {
+        String customerInput = "1\n" +
+                "C001 John john@example.com \"123 Street\" Regular";
+
+        String productInput = "1\n" +
+                "P001 Electronics Phone 500.00 10 12";
+
+        String cartInput = "1\n" +
+                "C001 P002 10";
+
+        Scanner scanner = new Scanner(customerInput);
+        helper.readCustomers(scanner, customers);
+
+        scanner = new Scanner(productInput);
+        helper.readProducts(scanner, inventory);
+
+        scanner = new Scanner(cartInput);
+        helper.readCartAdditions(scanner, customers, inventory);
+
+        assertTrue(outputStream.toString().contains("INVALID_PRODUCT_ID"));
     }
 
     @Test
